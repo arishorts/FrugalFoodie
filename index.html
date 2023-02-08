@@ -1,30 +1,53 @@
 <!DOCTYPE html>
 <html lang="en" class="text-stone-300 bg-cyan-800 font-serif">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css" />
     <title>Frugal Foodie</title>
-</head>
-<body class="relative grid grid-cols-6 grid-flow-row auto-rows-max">
-  <!-- title and navbar -->
-  <header class="col-span-6 bg-black h-20">
-    <h1 id="title">Frugal Foodie</h1>
-    <ul id="navigation">
-      <li></li>
-      <li></li>
-      <li></li>
-    </ul>
-  </header>
-  <!-- left sidebar -->
-  <section id="left-sidebar" class="col-span-1 border-neutral-300 h-screen bg-slate-900">Stuff</section>
-  <!-- left half of the main section -->
-  <section id="main-left" class="col-start-2 col-span-2 h-screen bg-gradient-to-tr from-emerald-50 to-emerald-900">Other stuff</section>
-  <!-- right part of the main section -->
-  <section id="main-right" class="col-start-4 col-span-3 h-screen bg-gradient-to-bl from-emerald-50 to-emerald-900">Stuff again</section>
-  <!-- footer -->
-  <footer id="footer" class="col-span-6 bg-black h-10">footer stuff</footer>
-</body>
+    <style>
+      #map {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body class="relative grid grid-cols-6 grid-flow-row auto-rows-max">
+    <!-- title and navbar -->
+    <header class="col-span-6 bg-black h-20">
+      <h1 id="title">Frugal Foodie</h1>
+      <ul id="navigation">
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </header>
+    <script src="./assets/js/index.js"></script>
+    <!-- left sidebar -->
+    <section
+      id="left-sidebar"
+      class="col-span-1 border-neutral-300 h-screen bg-slate-900"
+    >
+      Stuff
+    </section>
+    <!-- left half of the main section -->
+    <section
+      id="main-left"
+      class="col-start-2 col-span-2 h-screen bg-gradient-to-tr from-emerald-50 to-emerald-900"
+    >
+      Other stuff
+    </section>
+    <!-- right part of the main section -->
+    <section
+      id="main-right"
+      class="col-start-4 col-span-3 h-screen bg-gradient-to-bl from-emerald-50 to-emerald-900"
+    >
+      <h1>Lets' A Go To Super Mario World</h1>
+      <div id="map"></div>
+    </section>
+    <!-- footer -->
+    <footer id="footer" class="col-span-6 bg-black h-10">footer stuff</footer>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYNCDLPp5lDjmVzQk0Q3T3xDoqNyjVllY&libraries=places&callback=initMap"></script>
+  </body>
 </html>
