@@ -1,77 +1,180 @@
-// function initMap() {
-//   navigator.geolocation.getCurrentPosition((pos) => {
-//     // map = new google.maps.Map(document.getElementById("map"), {
-//     //   center: {
-//     //     lat: pos.coods.latitude,
-//     //     lng: pos.coords.longitude,
-//     //     zoom: 18,
-//     //     mapId: "7293a2b4fe87a0c4",
-//     //     mapTypeControl: false,
-//     //     fullscreenControl: false,
-//     //     streetViewControl: false,
-//     //   },
-//     // });
-//     searchNearMe(pos.coords.latitude, pos.coords.longitude, "market");
-//   });
-// }
+//https://www.youtube.com/watch?v=JXi9C2EQ2qE&ab_channel=FrameworkTelevision
+//https://www.youtube.com/watch?v=aFelEcWBqII&t=21s&ab_channel=CodingShiksha
+//https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
+//https://developers.google.com/maps/documentation/javascript/places
+//http://jsfiddle.net/2crQ7/
+//https://developers.google.com/maps/documentation/javascript
 
-var map;
-var service;
-var infowindow;
-
-function getCurrentPosition() {}
+var map = null;
+var currentInfoWindow = null;
+var markers = [];
 
 function initMap() {
-  var sydney = new google.maps.LatLng(-33.867, 151.195);
-
-  infowindow = new google.maps.InfoWindow();
-
+  // Try HTML5 geolocation.
   map = new google.maps.Map(document.getElementById("map"), {
-    center: sydney,
-    zoom: 15,
+    center: { lat: 28.3772, lng: -81.563873 },
+    zoom: 13,
   });
 
-  var request = {
-    query: "Museum of Contemporary Art Australia",
-    fields: ["name", "geometry"],
-  };
+  infoWindow = new google.maps.InfoWindow();
 
-  var service = new google.maps.places.PlacesService(map);
+  // const locationButton = document.createElement("button");
+  // locationButton.textContent = "Pan to Current Location";
+  // locationButton.classList.add("custom-map-control-button");
+  // map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
 
-  service.findPlaceFromQuery(request, function (results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      for (var i = 0; i < results.length; i++) {
-        createMarker(results[i]);
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        map.setCenter(pos);
+        currentInfoWindow = infoWindow;
+        currentInfoWindow.setPosition(pos);
+        currentInfoWindow.setContent("Location found.");
+        currentInfoWindow.open(map);
+        getRestaurants(pos);
+      },
+      () => {
+        handleLocationError(true, infoWindow, map.getCenter());
       }
-      map.setCenter(results[0].geometry.location);
-    }
-  });
+    );
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+
+  // locationButton.addEventListener("click", () => {
+  //   // Try HTML5 geolocation.
+  //   infoWindow.setPosition(pos);
+  //   infoWindow.setContent("Location found.");
+  //   infoWindow.open(map);
+  //   map.setCenter(pos);
+  //   getRestaurants(pos);
+  // });
 }
 
-function createMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
-
-  const marker = new google.maps.Marker({
-    map,
-    position: place.geometry.location,
-  });
-
-  google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
-  });
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation."
+  );
+  infoWindow.open(map);
 }
 
 window.initMap = initMap;
 
-function searchNearMe(lat, long, search) {
-  var url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${long}%2C${lat}&radius=1500&type=${search}&key=AIzaSyAYNCDLPp5lDjmVzQk0Q3T3xDoqNyjVllY`;
-  fetch(url)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-    });
+function getRestaurants(pos) {
+  var myLocation = new google.maps.LatLng(pos.lat, pos.lng);
+  var request = {
+    location: myLocation,
+    radius: 500,
+    query: ["grocery store near me"],
+  };
+
+  var service = new google.maps.places.PlacesService(map);
+  service.textSearch(request, callback);
 }
+
+function callback(results, status) {
+  console.log(results);
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+    for (var i = 0; i < results.length; i++) {
+      var place = results[i];
+      //let price = createPrice(place.price_level);
+      let contentString = `
+      <h3><strong>${place.name}</strong></h3>
+      <h4>${place.formatted_address}</h4>
+      `;
+      // <p>${price}<br/>;
+      //Rating : ${place.rating}
+      //createMarker(results[i]);
+
+      var infowindow = new google.maps.InfoWindow({
+        content: contentString,
+      });
+
+      var marker = new google.maps.Marker({
+        map,
+        animation: google.maps.Animation.DROP,
+        position: place.geometry.location,
+        title: place.name,
+      });
+
+      google.maps.event.addListener(
+        marker,
+        "click",
+        (function (marker, contentString, infowindow) {
+          return function () {
+            if (currentInfoWindow != null) {
+              currentInfoWindow.close();
+            }
+            infowindow.open(map, marker);
+            currentInfoWindow = infowindow;
+
+            // infowindow.setContent(contentString);
+            // infowindow.open(map, marker);
+            // if (marker.getAnimation() !== null) {
+            //   marker.setAnimation(null);
+            // } else {
+            //   marker.setAnimation(google.maps.Animation.BOUNCE);
+            //   setTimeout(() => {
+            //     marker.setAnimation(null);
+            //   }, 1000);
+            // }
+          };
+        })(marker, contentString, infowindow)
+      );
+    }
+  }
+}
+
+// function createPrice(level) {
+//   if (level != "" && level != null) {
+//     let out = "";
+//     for (var x = 0; x < level; x++) {
+//       out += "$";
+//     }
+//     return out;
+//   } else {
+//     return "?";
+//   }
+// }
+
+function addToLocalStorage(card) {
+  let currentItems = localStorage.getItem("items")
+    ? JSON.parse(localStorage.getItem("items"))
+    : [];
+  currentItems.push(card);
+  localStorage.setItem("items", JSON.stringify(currentItems));
+}
+function openModal(header, img, detail1, detail2, detail3) {
+  modal.style.display = "flex";
+  document.getElementById("modal").classList.add("active");
+  document.getElementById("modal-img").src = img;
+  document.getElementById("modal-header").innerHTML = header;
+  document.getElementById("modal-detail-1").innerHTML = detail1;
+  document.getElementById("modal-detail-2").innerHTML = detail2;
+  document.getElementById("modal-detail-3").innerHTML = detail3;
+}
+function closeModal() {
+  document.getElementById("modal").classList.remove("active");
+  modal.style.display = "none";
+}
+
+// ------nick add nutrients api here------
+// getNutrients: () => {
+//   data = spoonacularApp.apiCall();
+//   spoonacularApp.showNutrients(data);
+// },
+
+// showNutrients: () => {
+
+// },
 
 const spoonacularApp = {
   //initiate app
@@ -93,7 +196,6 @@ const spoonacularApp = {
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
-        spoonacularApp.success(data);
         return data; //why isnt this returning when i set a variable
       })
       .catch((error) => {
@@ -102,6 +204,7 @@ const spoonacularApp = {
   },
 
   success: (data) => {
+    spoonacularApp.success(data);
     console.log(data);
   },
 
@@ -120,16 +223,53 @@ const spoonacularApp = {
     spoonacularApp.searchByIngredient(recipeString);
   },
 
-  searchByIngredient: (queries) => {
-    spoonacularApp.apiCall(
+  searchByIngredient: async (queries) => {
+    var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
       "&ingredients=" + queries, //"pineapple,+flour,+sugar",
       {
-        method: "GET",
         "Content-Type": "application/json",
       }
     );
     $("#byIngredientsInput").val("");
+    spoonacularApp.showByIngredient(data);
+  },
+
+  showByIngredient: (data) => {
+    console.log(data);
+    var searchContainer = $("#searchResults");
+    searchContainer.empty();
+    for (let index = 0; index < 9; index += 1) {
+      var image = data[index].image;
+      var title = data[index].title;
+      var id = data[index].id;
+      anchorEl = $("<a>");
+      //anchorEl.css({ display: "block" });
+      //anchorText = anchorEl.text(data.products[index].title);
+
+      var temp = `  
+      <div class="bg-white p-4">
+      <img
+        src="${image}"
+        class="h-64 mx-auto"
+        alt="Image"
+      />
+      <h4 class="text-xl font-bold mt-4">${title}</h4>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="addToLocalStorage('${id}')"
+      >
+        Add
+      </button>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="openModal('${title}', '${image}', 'Detail 4', 'Detail 5', 'Detail 6')"
+      >
+        Details
+      </button>
+    </div>`;
+      searchContainer.append(temp);
+    }
   },
 
   validateGroceryProduct: () => {
@@ -141,16 +281,6 @@ const spoonacularApp = {
     //console.log(recipeString);
     spoonacularApp.searchGroceryProduct(recipeString);
   },
-
-  // ------nick add nutrients api here------
-  // getNutrients: () => {
-  //   data = spoonacularApp.apiCall();
-  //   spoonacularApp.showNutrients(data);
-  // },
-
-  // showNutrients: () => {
-
-  // },
 
   searchGroceryProduct: async (queries) => {
     var data = await spoonacularApp.apiCall(
@@ -169,37 +299,38 @@ const spoonacularApp = {
   },
 
   showGroceryProducts: (data) => {
-    var searchContainer = $("#searchResultsContainer");
+    console.log(data);
+    var searchContainer = $("#searchResults");
     searchContainer.empty();
-    for (let index = 0; index < data.products.length; index += 2) {
+    for (let index = 0; index < 9; index += 1) {
       var image = data.products[index].image;
       var title = data.products[index].title;
       var id = data.products[index].id;
-      var image2 = data.products[index + 1].image;
-      var title2 = data.products[index + 1].title;
-      var id2 = data.products[index + 1].id;
       anchorEl = $("<a>");
       //anchorEl.css({ display: "block" });
       //anchorText = anchorEl.text(data.products[index].title);
-      var temp = `
-        <div class="row align-items-center justify-content-center">
-        <div class="card m-2 col-5">
-          <img src="${image}" class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">${title}</h5>
-            <a href="./single-item.html?repo=${id}" class="btn btn-primary">Add</a>
-          </div>
-        </div>
-  
-        <div class="card m-2 col-5">
-          <img src="${image2}" class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">${title2}</h5>      
-            <a href="./single-item.html?repo=${id2}" class="btn btn-primary">Add</a>
-          </div>
-        </div>
-        </div>
-        `;
+
+      var temp = `  
+      <div class="bg-white p-4">
+      <img
+        src="${image}"
+        class="h-64 mx-auto"
+        alt="Image"
+      />
+      <h4 class="text-xl font-bold mt-4">${title}</h4>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="addToLocalStorage('${id}')"
+      >
+        Add
+      </button>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="openModal('${title}', '${image}', 'Detail 5', 'Detail 5', 'Detail 6')"
+      >
+        Details
+      </button>
+    </div>`;
       searchContainer.append(temp);
     }
   },
