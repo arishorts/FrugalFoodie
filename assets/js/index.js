@@ -1,76 +1,227 @@
-// function initMap() {
-//   navigator.geolocation.getCurrentPosition((pos) => {
-//     // map = new google.maps.Map(document.getElementById("map"), {
-//     //   center: {
-//     //     lat: pos.coods.latitude,
-//     //     lng: pos.coords.longitude,
-//     //     zoom: 18,
-//     //     mapId: "7293a2b4fe87a0c4",
-//     //     mapTypeControl: false,
-//     //     fullscreenControl: false,
-//     //     streetViewControl: false,
-//     //   },
-//     // });
-//     searchNearMe(pos.coords.latitude, pos.coords.longitude, "market");
-//   });
+//https://www.youtube.com/watch?v=JXi9C2EQ2qE&ab_channel=FrameworkTelevision
+//https://www.youtube.com/watch?v=aFelEcWBqII&t=21s&ab_channel=CodingShiksha
+//https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
+//https://developers.google.com/maps/documentation/javascript/places
+//http://jsfiddle.net/2crQ7/
+//https://developers.google.com/maps/documentation/javascript
+
+var map = null;
+var service;
+var pos;
+var infoWindow;
+var markers = [];
+
+// function positionFail(err) {
+//   if (err.code == 1) {
+//     alert("Error: Access is denied!");
+//   } else if (err.code == 2) {
+//     alert("Error: Position is unavailable!");
+//   }
 // }
 
-var map;
-var service;
-var infowindow;
-
-function getCurrentPosition() {}
+// function initMap() {
+//   let position = new Object();
+//   // const infoWindow = new google.maps.InfoWindow();
+//   navigator.geolocation.getCurrentPosition((pos) => {
+//     position.lat = pos.coords.latitude;
+//     position.lng = pos.coords.longitude;
+//     map = new google.maps.Map(document.getElementById("map"), {
+//       center: { lat: position.lat, lng: position.lng },
+//       zoom: 15,
+//     });
+//     // infoWindow.setPosition(position);
+//     // infoWindow.setContent("Location found.");
+//     // infoWindow.open(map);
+//     getRestaurants(position);
+//   }, positionFail);
+// }
 
 function initMap() {
-  var sydney = new google.maps.LatLng(-33.867, 151.195);
-
-  infowindow = new google.maps.InfoWindow();
-
+  // Try HTML5 geolocation.
   map = new google.maps.Map(document.getElementById("map"), {
-    center: sydney,
-    zoom: 15,
+    center: { lat: 28.3772, lng: -81.563873 },
+    zoom: 13,
   });
 
-  var request = {
-    query: "Museum of Contemporary Art Australia",
-    fields: ["name", "geometry"],
-  };
+  infoWindow = new google.maps.InfoWindow();
 
-  var service = new google.maps.places.PlacesService(map);
+  // const locationButton = document.createElement("button");
+  // locationButton.textContent = "Pan to Current Location";
+  // locationButton.classList.add("custom-map-control-button");
+  // map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
 
-  service.findPlaceFromQuery(request, function (results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      for (var i = 0; i < results.length; i++) {
-        createMarker(results[i]);
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        // infoWindow.setPosition(pos);
+        // infoWindow.setContent("Location found.");
+        // infoWindow.open(map);
+        map.setCenter(pos);
+        getRestaurants(pos);
+      },
+      () => {
+        handleLocationError(true, infoWindow, map.getCenter());
       }
-      map.setCenter(results[0].geometry.location);
-    }
-  });
+    );
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+
+  // locationButton.addEventListener("click", () => {
+  //   // Try HTML5 geolocation.
+  //   infoWindow.setPosition(pos);
+  //   infoWindow.setContent("Location found.");
+  //   infoWindow.open(map);
+  //   map.setCenter(pos);
+  //   getRestaurants(pos);
+  // });
+
+  // -----------------BUGFIX HOW TO CLOSE INFOWINDOWS------------------------
+  // // create event listener for the marker
+  // google.maps.event.addListener (marker0, 'click', function() {
+  //   // and here it comes:
+  //   // check if there is already an InfoWindow displayed
+  //   (currentInfoWindow is not null). if yes, close it
+  //   if (currentInfoWindow != null) { currentInfoWindow.close(); }
+  //   // show new info window
+  //   infowindow0.open(map, marker0);
+  //   // store the now displayed info window in global var
+  //   currentInfoWindow
+  //   currentInfoWindow = infowindow0;
+  //   });
+
+  // infoWindow.addListener("closeclick", () => {
+  //   // Handle focus manually.
+  // });
+
+  // google.maps.event.addListener(map, "click", function () {
+  //   if (infoWindow != null) {
+  //     infoWindow.close();
+  //   }
+  // });
+  // -----------------BUGFIX HOW TO CLOSE INFOWINDOWS------------------------
 }
 
-function createMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
-
-  const marker = new google.maps.Marker({
-    map,
-    position: place.geometry.location,
-  });
-
-  google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
-  });
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation."
+  );
+  infoWindow.open(map);
 }
 
 window.initMap = initMap;
 
-function searchNearMe(lat, long, search) {
-  var url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${long}%2C${lat}&radius=1500&type=${search}&key=AIzaSyAYNCDLPp5lDjmVzQk0Q3T3xDoqNyjVllY`;
-  fetch(url)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-    });
+function getRestaurants(pos) {
+  var myLocation = new google.maps.LatLng(pos.lat, pos.lng);
+  var request = {
+    location: myLocation,
+    radius: 500,
+    query: ["grocery store near me"],
+  };
+
+  service = new google.maps.places.PlacesService(map);
+  service.textSearch(request, callback);
+}
+
+function callback(results, status) {
+  console.log(results);
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+    for (var i = 0; i < results.length; i++) {
+      var place = results[i];
+      let price = createPrice(place.price_level);
+      let contentString = `
+      <h3>${place.name}</h3>
+      <p>${price}<br/>`;
+      // <h4>${place.vicinity}</h4>
+      //Rating : ${place.rating}`
+      //createMarker(results[i]);
+
+      var infowindow = new google.maps.InfoWindow({
+        content: contentString,
+      });
+
+      var marker = new google.maps.Marker({
+        map,
+        animation: google.maps.Animation.DROP,
+        position: place.geometry.location,
+        title: place.name,
+      });
+
+      markers[i] = {
+        content: contentString,
+        marker: marker,
+      };
+
+      google.maps.event.addListener(
+        marker,
+        "click",
+        (function (marker, contentString, infowindow) {
+          return function () {
+            infowindow.setContent(contentString);
+            infowindow.open(map, marker);
+            if (marker.getAnimation() !== null) {
+              marker.setAnimation(null);
+            } else {
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+              setTimeout(() => {
+                marker.setAnimation(null);
+              }, 1000);
+            }
+          };
+        })(marker, contentString, infowindow)
+      );
+
+      // google.maps.event.addListener(marker, "click", () => {
+      //   //infowindow.setContent(contentString);
+      //   // infowindow.open(map, this);
+      //   infowindow.open({
+      //     anchor: marker,
+      //     map,
+      //   });
+      // });
+
+      //marker.setMap(map);
+    }
+    console.log(markers);
+  }
+}
+
+// function createMarker(place) {
+//   if (!place.geometry || !place.geometry.location) return;
+
+//   const marker = new google.maps.Marker({
+//     map: map,
+//     position: place.geometry.location,
+//     title: place.name,
+//   });
+
+// function bindInfoWindow(marker, map, infowindow, html) {
+//   marker.addListener("click", () => {
+//     console.log("hello1");
+//     infowindow.setContent(html);
+//     infowindow.open(map, this);
+//   });
+// }
+
+function createPrice(level) {
+  if (level != "" && level != null) {
+    let out = "";
+    for (var x = 0; x < level; x++) {
+      out += "$";
+    }
+    return out;
+  } else {
+    return "?";
+  }
 }
 
 const spoonacularApp = {
