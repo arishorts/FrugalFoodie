@@ -224,6 +224,27 @@ function createPrice(level) {
   }
 }
 
+function addToLocalStorage(card) {
+  let currentItems = localStorage.getItem("items")
+    ? JSON.parse(localStorage.getItem("items"))
+    : [];
+  currentItems.push(card);
+  localStorage.setItem("items", JSON.stringify(currentItems));
+}
+function openModal(header, img, detail1, detail2, detail3) {
+  modal.style.display = "flex";
+  document.getElementById("modal").classList.add("active");
+  document.getElementById("modal-img").src = img;
+  document.getElementById("modal-header").innerHTML = header;
+  document.getElementById("modal-detail-1").innerHTML = detail1;
+  document.getElementById("modal-detail-2").innerHTML = detail2;
+  document.getElementById("modal-detail-3").innerHTML = detail3;
+}
+function closeModal() {
+  document.getElementById("modal").classList.remove("active");
+  modal.style.display = "none";
+}
+
 const spoonacularApp = {
   //initiate app
   init: () => {
@@ -320,38 +341,61 @@ const spoonacularApp = {
   },
 
   showGroceryProducts: (data) => {
-    var searchContainer = $("#searchResultsContainer");
+    var searchContainer = $("#searchResults");
     searchContainer.empty();
-    for (let index = 0; index < data.products.length; index += 2) {
+    for (let index = 0; index < 9; index += 1) {
       var image = data.products[index].image;
       var title = data.products[index].title;
       var id = data.products[index].id;
-      var image2 = data.products[index + 1].image;
-      var title2 = data.products[index + 1].title;
-      var id2 = data.products[index + 1].id;
+      // var image2 = data.products[index + 1].image;
+      // var title2 = data.products[index + 1].title;
+      // var id2 = data.products[index + 1].id;
       anchorEl = $("<a>");
       //anchorEl.css({ display: "block" });
       //anchorText = anchorEl.text(data.products[index].title);
-      var temp = `
-        <div class="row align-items-center justify-content-center">
-        <div class="card m-2 col-5">
-          <img src="${image}" class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">${title}</h5>
-            <a href="./single-item.html?repo=${id}" class="btn btn-primary">Add</a>
-          </div>
-        </div>
-  
-        <div class="card m-2 col-5">
-          <img src="${image2}" class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">${title2}</h5>      
-            <a href="./single-item.html?repo=${id2}" class="btn btn-primary">Add</a>
-          </div>
-        </div>
-        </div>
-        `;
-      searchContainer.append(temp);
+
+      var temp2 = `  
+      <div class="bg-white p-4">
+      <img
+        src="${image}"
+        class="h-64 mx-auto"
+        alt="Image"
+      />
+      <h4 class="text-xl font-bold mt-4">${title}</h4>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="addToLocalStorage('Card 2')"
+      >
+        Add
+      </button>
+      <button
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="openModal('Card 2', '${image}', 'Detail 4', 'Detail 5', 'Detail 6')"
+      >
+        Details
+      </button>
+    </div>`;
+
+      // var temp = `
+      //   <div class="row align-items-center justify-content-center">
+      //   <div class="card m-2 col-5">
+      //     <img src="${image}" class="card-img-top" alt="..." />
+      //     <div class="card-body">
+      //       <h5 class="card-title">${title}</h5>
+      //       <a href="./single-item.html?repo=${id}" class="btn btn-primary">Add</a>
+      //     </div>
+      //   </div>
+
+      //   <div class="card m-2 col-5">
+      //     <img src="${image2}" class="card-img-top" alt="..." />
+      //     <div class="card-body">
+      //       <h5 class="card-title">${title2}</h5>
+      //       <a href="./single-item.html?repo=${id2}" class="btn btn-primary">Add</a>
+      //     </div>
+      //   </div>
+      //   </div>
+      //   `;
+      searchContainer.append(temp2);
     }
   },
 };
