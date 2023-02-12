@@ -263,7 +263,7 @@ const spoonacularApp = {
       //anchorText = anchorEl.text(data.products[index].title);
 
       var temp = `  
-      <div class="bg-white p-4">
+      <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
       <img
         src="${image}"
         class="h-64 mx-auto"
@@ -326,7 +326,7 @@ const spoonacularApp = {
       //anchorText = anchorEl.text(data.products[index].title);
 
       var temp = `  
-      <div class="bg-white p-4">
+      <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
       <img
         src="${image}"
         class="h-64 mx-auto"
