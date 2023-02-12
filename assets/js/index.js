@@ -143,13 +143,12 @@ function callback(results, status) {
 //   }
 // }
 
-function addToLocalStorage(card) {
-  console.log(card);
+function addToLocalStorage(card, type) {
   let currentItems = localStorage.getItem("items")
     ? JSON.parse(localStorage.getItem("items"))
     : [];
-  console.log(currentItems);
-  currentItems.push(card);
+  if (currentItems.some((obj) => obj.id === card)) return;
+  currentItems.push({ id: card, type: type });
   localStorage.setItem("items", JSON.stringify(currentItems));
 }
 
@@ -206,7 +205,7 @@ const spoonacularApp = {
   },
 
   success: (data) => {
-    console.log(data);
+    //console.log(data);
   },
 
   fail: (error) => {
@@ -273,7 +272,7 @@ const spoonacularApp = {
       <h4 class="text-xl font-bold mt-4">${title}</h4>
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="addToLocalStorage('${id}')"
+        onclick="addToLocalStorage('${id}','recipe')"
       >
         Add
       </button>
@@ -336,7 +335,7 @@ const spoonacularApp = {
       <h4 class="text-xl font-bold mt-4">${title}</h4>
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="addToLocalStorage('${id}')"
+        onclick="addToLocalStorage('${id}','product')"
       >
         Add
       </button>
