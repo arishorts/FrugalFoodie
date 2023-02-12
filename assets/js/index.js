@@ -7,7 +7,8 @@
 
 var map = null;
 var currentInfoWindow = null;
-var markers = [];
+
+window.initMap = initMap;
 
 function initMap() {
   // Try HTML5 geolocation.
@@ -66,8 +67,6 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.open(map);
 }
 
-window.initMap = initMap;
-
 function getRestaurants(pos) {
   var myLocation = new google.maps.LatLng(pos.lat, pos.lng);
   var request = {
@@ -81,7 +80,6 @@ function getRestaurants(pos) {
 }
 
 function callback(results, status) {
-  console.log(results);
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
       var place = results[i];
@@ -146,12 +144,15 @@ function callback(results, status) {
 // }
 
 function addToLocalStorage(card) {
+  console.log(card);
   let currentItems = localStorage.getItem("items")
     ? JSON.parse(localStorage.getItem("items"))
     : [];
+  console.log(currentItems);
   currentItems.push(card);
   localStorage.setItem("items", JSON.stringify(currentItems));
 }
+
 function openModal(header, img, detail1, detail2, detail3) {
   modal.style.display = "flex";
   document.getElementById("modal").classList.add("active");
@@ -161,6 +162,7 @@ function openModal(header, img, detail1, detail2, detail3) {
   document.getElementById("modal-detail-2").innerHTML = detail2;
   document.getElementById("modal-detail-3").innerHTML = detail3;
 }
+
 function closeModal() {
   document.getElementById("modal").classList.remove("active");
   modal.style.display = "none";
@@ -192,10 +194,10 @@ const spoonacularApp = {
   apiCall: (userRequest, queries, options) => {
     const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
-    //console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
+        spoonacularApp.success(data);
         return data; //why isnt this returning when i set a variable
       })
       .catch((error) => {
@@ -204,7 +206,6 @@ const spoonacularApp = {
   },
 
   success: (data) => {
-    spoonacularApp.success(data);
     console.log(data);
   },
 
@@ -235,10 +236,25 @@ const spoonacularApp = {
     spoonacularApp.showByIngredient(data);
   },
 
+  searchRecipeCard: async (id) => {
+    const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
+    return fetch(url, { "Content-Type": "application/json" })
+      .then((response) => response.json())
+      .then((data) => {
+        spoonacularApp.success(data);
+        let url = data.url;
+        window.open(url, "_blank");
+      })
+      .catch((error) => {
+        spoonacularApp.fail(error);
+      });
+  },
+
   showByIngredient: (data) => {
-    console.log(data);
     var searchContainer = $("#searchResults");
     searchContainer.empty();
+    spoonacularApp.generateIngredientsModal();
     for (let index = 0; index < 9; index += 1) {
       var image = data[index].image;
       var title = data[index].title;
@@ -263,9 +279,9 @@ const spoonacularApp = {
       </button>
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="openModal('${title}', '${image}', 'Detail 4', 'Detail 5', 'Detail 6')"
+        onclick="spoonacularApp.searchRecipeCard('${id}')"
       >
-        Details
+        Recipe
       </button>
     </div>`;
       searchContainer.append(temp);
@@ -299,9 +315,9 @@ const spoonacularApp = {
   },
 
   showGroceryProducts: (data) => {
-    console.log(data);
     var searchContainer = $("#searchResults");
     searchContainer.empty();
+    spoonacularApp.generateGroceryModal();
     for (let index = 0; index < 9; index += 1) {
       var image = data.products[index].image;
       var title = data.products[index].title;
@@ -333,6 +349,54 @@ const spoonacularApp = {
     </div>`;
       searchContainer.append(temp);
     }
+  },
+
+  generateIngredientsModal: (data) => {
+    var modalContainer = $("#modal");
+    modalContainer.empty();
+    var temp = `  
+    <div class="modal-overlay bg-black opacity-75"></div>
+      <div class="modal-container bg-white p-4 md:w-1/2 lg:w-1/3 mx-auto">
+        <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
+        <h4 id="modal-header" class="text-xl font-bold mt-4"></h4>
+        <ul class="list-disc pl-5 mt-4">
+          <li id="modal-detail-1"></li>
+          <li id="modal-detail-2"></li>
+          <li id="modal-detail-3"></li>
+        </ul>
+        <button
+          class="modal-close-button bg-gray-800 text-white p-2 mt-4"
+          onclick="closeModal()"
+        >
+          Close
+        </button>
+      </div>
+    `;
+    modalContainer.append(temp);
+  },
+
+  generateGroceryModal: (data) => {
+    var modalContainer = $("#modal");
+    modalContainer.empty();
+    var temp = `  
+    <div class="modal-overlay bg-black opacity-75"></div>
+      <div class="modal-container bg-white p-4 md:w-1/2 lg:w-1/3 mx-auto">
+        <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
+        <h4 id="modal-header" class="text-xl font-bold mt-4"></h4>
+        <ul class="list-disc pl-5 mt-4">
+          <li id="modal-detail-1"></li>
+          <li id="modal-detail-2"></li>
+          <li id="modal-detail-3"></li>
+        </ul>
+        <button
+          class="modal-close-button bg-gray-800 text-white p-2 mt-4"
+          onclick="closeModal()"
+        >
+          Close
+        </button>
+      </div>
+    `;
+    modalContainer.append(temp);
   },
 };
 
