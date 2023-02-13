@@ -1,5 +1,4 @@
 function openModal(header, img, importantBadges) {
-  console.log(importantBadges);
   var modalContainer = $(".list-disc");
   modalContainer.empty();
   let importantBadgesArray = importantBadges.split(",");
@@ -121,7 +120,7 @@ const spoonacularApp = {
   },
 
   success: (data) => {
-    console.log(data);
+    //console.log(data);
   },
 
   fail: (error) => {

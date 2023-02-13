@@ -188,7 +188,7 @@ const spoonacularApp = {
   apiCall: (userRequest, queries, options) => {
     const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
-    console.log(url);
+    //console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
@@ -209,6 +209,23 @@ const spoonacularApp = {
     console.log("you have an error");
   },
 
+  checkRadioButtons: () => {
+    const intolerances = [];
+
+    if ($("#ketoCheckbox").prop("checked")) {
+      intolerances.push("keto");
+    }
+    if ($("#atkinsCheckbox").prop("checked")) {
+      intolerances.push("atkins");
+    }
+    if ($("#glutenFree").prop("checked")) {
+      intolerances.push("gluten");
+    }
+    // add more checkboxes as needed
+
+    return intolerances.join(",");
+  },
+
   validateByIngredients: () => {
     var recipeArray = $("#byIngredientsInput").val().split(",");
     var recipeString = recipeArray[0];
@@ -220,9 +237,12 @@ const spoonacularApp = {
   },
 
   searchByIngredient: async (queries) => {
+    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
-      "&ingredients=" + queries, //"pineapple,+flour,+sugar",
+      "&ingredients=" +
+        queries +
+        (intolerances ? "&intolerances=" + intolerances : ""), //"pineapple,+flour,+sugar",
       {
         "Content-Type": "application/json",
       }
@@ -293,9 +313,12 @@ const spoonacularApp = {
   },
 
   searchGroceryProduct: async (queries) => {
+    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" + queries, //?query=pizza
+      "&query=" +
+        queries +
+        (intolerances ? "&intolerances=" + intolerances : ""), //?query=pizza
       {
         method: "GET",
         "Content-Type": "application/json",
