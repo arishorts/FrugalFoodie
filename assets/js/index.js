@@ -84,10 +84,20 @@ function callback(results, status) {
     for (var i = 0; i < results.length; i++) {
       var place = results[i];
       //let price = createPrice(place.price_level);
+
+      let addressComponents = place.formatted_address.split(",");
+      let streetAddress = addressComponents[0];
+      let cityState = addressComponents[1] + ", " + addressComponents[2];
+      let lat = place.geometry.location.lat();
+      let lng = place.geometry.location.lng();
+      let mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
+
       let contentString = `
-      <h3><strong>${place.name}</strong></h3>
-      <h4>${place.formatted_address}</h4>
+      <h3 class="infoWindowText"><strong>${place.name}</strong></h3>
+      <h4 class="infoWindowText">${streetAddress}<br>${cityState}</h4>
+      <a href="${mapUrl}" id="mapLink" class="infoWindowText" target="_blank">View on Google Maps</a>
       `;
+
       // <p>${price}<br/>;
       //Rating : ${place.rating}
       //createMarker(results[i]);
@@ -186,7 +196,8 @@ const spoonacularApp = {
   },
 
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
     //console.log(url);
     return fetch(url, options)
@@ -252,7 +263,8 @@ const spoonacularApp = {
   },
 
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
       .then((response) => response.json())
@@ -278,26 +290,24 @@ const spoonacularApp = {
       //anchorText = anchorEl.text(data.products[index].title);
 
       var temp = `  
-      <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
-      <img
+      <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
+        <img
         src="${image}"
-        class="mx-auto w-full h-auto max-h-200"
+        class="mx-auto w-auto h-auto max-h-300"
         alt="Image"
-      />
-      <h4 class="text-xl font-bold mt-4">${title}</h4>
-      <button
-        class="bg-gray-800 text-white p-2 mt-4"
-        onclick="addToLocalStorage('${id}','recipe')"
-      >
-        Add
-      </button>
-      <button
-        class="bg-gray-800 text-white p-2 mt-4"
-        onclick="spoonacularApp.searchRecipeCard('${id}')"
-      >
-        Recipe
-      </button>
-    </div>`;
+        />
+        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+        <div class="my-auto mb-0">
+          <button
+          class="bg-gray-800 text-white p-2 mt-4"
+          onclick="addToLocalStorage('${id}','recipe')"
+          >Add</button>
+          <button
+          class="bg-gray-800 text-white p-2 mt-4"
+          onclick="spoonacularApp.searchRecipeCard('${id}')"
+          >Recipe</button>
+        </div>
+      </div>`;
       searchContainer.append(temp);
     }
   },
@@ -344,13 +354,14 @@ const spoonacularApp = {
       //anchorText = anchorEl.text(data.products[index].title);
 
       var temp = `  
-      <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
+      <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
       <img
         src="${image}"
-        class="mx-auto w-full h-auto max-h-200"
+        class="mx-auto w-auto h-auto max-h-300"
         alt="Image"
       />
-      <h4 class="text-xl font-bold mt-4">${title}</h4>
+      <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+      <div class="my-auto mb-0">
       <button
         class="bg-gray-800 text-white p-2 mt-4"
         onclick="addToLocalStorage('${id}','product')"
@@ -363,6 +374,7 @@ const spoonacularApp = {
       >
         Details
       </button>
+      </div>
     </div>`;
       searchContainer.append(temp);
     }

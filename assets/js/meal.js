@@ -42,14 +42,16 @@ const spoonacularApp = {
         var image = data.image;
         var title = data.title;
         var importantBadges = data.importantBadges;
+
         var temp = `
-            <div class="bg-white p-4" data-id="${item.id}">
+            <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto" data-id="${item.id}">
             <img
               src="${image}"
-              class="mx-auto w-full h-auto max-h-200"
+              class="mx-auto w-auto h-auto max-h-200"
               alt="Image"
             />
-            <h4 class="text-xl font-bold mt-4">${title}</h4>
+            <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+            <div class="my-auto mb-0">
             <button
               class="bg-gray-800 text-white p-2 mt-4"
               onclick="spoonacularApp.removeItem('${item.id}')"
@@ -62,6 +64,7 @@ const spoonacularApp = {
             >
               Details
             </button>
+            </div>
           </div>`;
         mealsContainer.append(temp);
       }
@@ -78,14 +81,16 @@ const spoonacularApp = {
         );
         var image = data.image;
         var title = data.title;
+
         var temp = `  
-        <div class="bg-white p-4" data-id="${item.id}">
+        <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto" data-id="${item.id}">
         <img
           src="${image}"
-          class="mx-auto w-full h-auto max-h-200"
+          class="mx-auto w-auto h-auto max-h-300"
           alt="Image"
         />
-        <h4 class="text-xl font-bold mt-4">${title}</h4>
+        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+        <div class="my-auto mb-0">
         <button
           class="bg-gray-800 text-white p-2 mt-4"
           onclick="spoonacularApp.removeItem('${item.id}')"
@@ -98,6 +103,7 @@ const spoonacularApp = {
         >
           Recipe
         </button>
+        </div>
       </div>`;
         mealsContainer.append(temp);
       }
