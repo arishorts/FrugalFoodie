@@ -131,18 +131,6 @@ function callback(results, status) {
   }
 }
 
-// function createPrice(level) {
-//   if (level != "" && level != null) {
-//     let out = "";
-//     for (var x = 0; x < level; x++) {
-//       out += "$";
-//     }
-//     return out;
-//   } else {
-//     return "?";
-//   }
-// }
-
 function addToLocalStorage(card, type) {
   let currentItems = localStorage.getItem("items")
     ? JSON.parse(localStorage.getItem("items"))
@@ -152,14 +140,21 @@ function addToLocalStorage(card, type) {
   localStorage.setItem("items", JSON.stringify(currentItems));
 }
 
-function openModal(header, img, detail1, detail2, detail3) {
+async function openModal(header, img, id) {
+  data = await spoonacularApp.apiCall(`food/products/${id}`, "", {
+    "Content-Type": "application/json",
+  });
+  console.log(data);
+  var modalContainer = $(".list-disc");
+  modalContainer.empty();
   modal.style.display = "flex";
   document.getElementById("modal").classList.add("active");
   document.getElementById("modal-img").src = img;
   document.getElementById("modal-header").innerHTML = header;
-  document.getElementById("modal-detail-1").innerHTML = detail1;
-  document.getElementById("modal-detail-2").innerHTML = detail2;
-  document.getElementById("modal-detail-3").innerHTML = detail3;
+  for (let i = 0; i < data.importantBadges.length; i++) {
+    let item = data.importantBadges[i].replace(/_/g, " ");
+    $(".list-disc").append("<li>" + item + "</li>");
+  }
 }
 
 function closeModal() {
@@ -193,6 +188,7 @@ const spoonacularApp = {
   apiCall: (userRequest, queries, options) => {
     const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
+    //console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
@@ -213,6 +209,23 @@ const spoonacularApp = {
     console.log("you have an error");
   },
 
+  checkRadioButtons: () => {
+    const intolerances = [];
+
+    if ($("#ketoCheckbox").prop("checked")) {
+      intolerances.push("keto");
+    }
+    if ($("#atkinsCheckbox").prop("checked")) {
+      intolerances.push("atkins");
+    }
+    if ($("#glutenFree").prop("checked")) {
+      intolerances.push("gluten");
+    }
+    // add more checkboxes as needed
+
+    return intolerances.join(",");
+  },
+
   validateByIngredients: () => {
     var recipeArray = $("#byIngredientsInput").val().split(",");
     var recipeString = recipeArray[0];
@@ -224,9 +237,12 @@ const spoonacularApp = {
   },
 
   searchByIngredient: async (queries) => {
+    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
-      "&ingredients=" + queries, //"pineapple,+flour,+sugar",
+      "&ingredients=" +
+        queries +
+        (intolerances ? "&intolerances=" + intolerances : ""), //"pineapple,+flour,+sugar",
       {
         "Content-Type": "application/json",
       }
@@ -253,7 +269,6 @@ const spoonacularApp = {
   showByIngredient: (data) => {
     var searchContainer = $("#searchResults");
     searchContainer.empty();
-    spoonacularApp.generateIngredientsModal();
     for (let index = 0; index < 9; index += 1) {
       var image = data[index].image;
       var title = data[index].title;
@@ -266,7 +281,7 @@ const spoonacularApp = {
       <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
       <img
         src="${image}"
-        class="h-64 mx-auto"
+        class="mx-auto w-full h-auto max-h-200"
         alt="Image"
       />
       <h4 class="text-xl font-bold mt-4">${title}</h4>
@@ -298,9 +313,12 @@ const spoonacularApp = {
   },
 
   searchGroceryProduct: async (queries) => {
+    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" + queries, //?query=pizza
+      "&query=" +
+        queries +
+        (intolerances ? "&intolerances=" + intolerances : ""), //?query=pizza
       {
         method: "GET",
         "Content-Type": "application/json",
@@ -329,7 +347,7 @@ const spoonacularApp = {
       <div class="bg-gradient-to-r from-white to-gray-500 border border-black p-4">
       <img
         src="${image}"
-        class="h-64 mx-auto"
+        class="mx-auto w-full h-auto max-h-200"
         alt="Image"
       />
       <h4 class="text-xl font-bold mt-4">${title}</h4>
@@ -341,7 +359,7 @@ const spoonacularApp = {
       </button>
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="openModal('${title}', '${image}', 'Detail 5', 'Detail 5', 'Detail 6')"
+        onclick="openModal('${title}', '${image}', '${id}')"
       >
         Details
       </button>
@@ -350,29 +368,13 @@ const spoonacularApp = {
     }
   },
 
-  generateIngredientsModal: (data) => {
-    var modalContainer = $("#modal");
-    modalContainer.empty();
-    var temp = `  
-    <div class="modal-overlay bg-black opacity-75"></div>
-      <div class="modal-container bg-white p-4 md:w-1/2 lg:w-1/3 mx-auto">
-        <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
-        <h4 id="modal-header" class="text-xl font-bold mt-4"></h4>
-        <ul class="list-disc pl-5 mt-4">
-          <li id="modal-detail-1"></li>
-          <li id="modal-detail-2"></li>
-          <li id="modal-detail-3"></li>
-        </ul>
-        <button
-          class="modal-close-button bg-gray-800 text-white p-2 mt-4"
-          onclick="closeModal()"
-        >
-          Close
-        </button>
-      </div>
-    `;
-    modalContainer.append(temp);
-  },
+  // generateIngredientsModal: (data) => {
+  //   var modalContainer = $("#modal");
+  //   modalContainer.empty();
+  //   var temp = `
+  //   `;
+  //   modalContainer.append(temp);
+  // },
 
   generateGroceryModal: (data) => {
     var modalContainer = $("#modal");
@@ -383,9 +385,6 @@ const spoonacularApp = {
         <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
         <h4 id="modal-header" class="text-xl font-bold mt-4"></h4>
         <ul class="list-disc pl-5 mt-4">
-          <li id="modal-detail-1"></li>
-          <li id="modal-detail-2"></li>
-          <li id="modal-detail-3"></li>
         </ul>
         <button
           class="modal-close-button bg-gray-800 text-white p-2 mt-4"
