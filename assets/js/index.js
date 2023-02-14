@@ -19,11 +19,6 @@ function initMap() {
 
   infoWindow = new google.maps.InfoWindow();
 
-  // const locationButton = document.createElement("button");
-  // locationButton.textContent = "Pan to Current Location";
-  // locationButton.classList.add("custom-map-control-button");
-  // map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -46,15 +41,6 @@ function initMap() {
     // Browser doesn't support Geolocation
     handleLocationError(false, infoWindow, map.getCenter());
   }
-
-  // locationButton.addEventListener("click", () => {
-  //   // Try HTML5 geolocation.
-  //   infoWindow.setPosition(pos);
-  //   infoWindow.setContent("Location found.");
-  //   infoWindow.open(map);
-  //   map.setCenter(pos);
-  //   getRestaurants(pos);
-  // });
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -123,17 +109,6 @@ function callback(results, status) {
             }
             infowindow.open(map, marker);
             currentInfoWindow = infowindow;
-
-            // infowindow.setContent(contentString);
-            // infowindow.open(map, marker);
-            // if (marker.getAnimation() !== null) {
-            //   marker.setAnimation(null);
-            // } else {
-            //   marker.setAnimation(google.maps.Animation.BOUNCE);
-            //   setTimeout(() => {
-            //     marker.setAnimation(null);
-            //   }, 1000);
-            // }
           };
         })(marker, contentString, infowindow)
       );
@@ -154,7 +129,6 @@ async function openModal(header, img, id) {
   data = await spoonacularApp.apiCall(`food/products/${id}`, "", {
     "Content-Type": "application/json",
   });
-  console.log(data);
   var modalContainer = $(".list-disc");
   modalContainer.empty();
   modal.style.display = "flex";
@@ -172,16 +146,6 @@ function closeModal() {
   modal.style.display = "none";
 }
 
-// ------nick add nutrients api here------
-// getNutrients: () => {
-//   data = spoonacularApp.apiCall();
-//   spoonacularApp.showNutrients(data);
-// },
-
-// showNutrients: () => {
-
-// },
-
 const spoonacularApp = {
   //initiate app
   init: () => {
@@ -196,10 +160,8 @@ const spoonacularApp = {
   },
 
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
-    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
-    //console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
@@ -212,29 +174,12 @@ const spoonacularApp = {
   },
 
   success: (data) => {
-    //console.log(data);
+    console.log(data);
   },
 
   fail: (error) => {
     console.log(error);
     console.log("you have an error");
-  },
-
-  checkRadioButtons: () => {
-    const intolerances = [];
-
-    if ($("#ketoCheckbox").prop("checked")) {
-      intolerances.push("keto");
-    }
-    if ($("#atkinsCheckbox").prop("checked")) {
-      intolerances.push("atkins");
-    }
-    if ($("#glutenFree").prop("checked")) {
-      intolerances.push("gluten");
-    }
-    // add more checkboxes as needed
-
-    return intolerances.join(",");
   },
 
   validateByIngredients: () => {
@@ -243,17 +188,13 @@ const spoonacularApp = {
     for (let index = 1; index < recipeArray.length; index++) {
       recipeString = recipeString + ",+" + recipeArray[index].trim();
     }
-    //console.log(recipeString);
     spoonacularApp.searchByIngredient(recipeString);
   },
 
   searchByIngredient: async (queries) => {
-    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
-      "&ingredients=" +
-        queries +
-        (intolerances ? "&intolerances=" + intolerances : ""), //"pineapple,+flour,+sugar",
+      "&ingredients=" + queries,
       {
         "Content-Type": "application/json",
       }
@@ -263,7 +204,7 @@ const spoonacularApp = {
   },
 
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
@@ -323,12 +264,9 @@ const spoonacularApp = {
   },
 
   searchGroceryProduct: async (queries) => {
-    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" +
-        queries +
-        (intolerances ? "&intolerances=" + intolerances : ""), //?query=pizza
+      "&query=" + queries, //?query=pizza
       {
         method: "GET",
         "Content-Type": "application/json",
