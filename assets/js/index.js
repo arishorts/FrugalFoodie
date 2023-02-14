@@ -237,15 +237,18 @@ const spoonacularApp = {
         class="mx-auto w-auto h-auto max-h-300"
         alt="Image"
         />
-        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title.replace(
+          /'/g,
+          "\\'"
+        )}</h4>
         <div class="my-auto mb-0">
           <button
           class="bg-gray-800 text-white p-2 mt-4"
-          onclick="addToLocalStorage('${id}','recipe')"
+          onclick='addToLocalStorage("${id}","recipe")'
           >Add</button>
           <button
           class="bg-gray-800 text-white p-2 mt-4"
-          onclick="spoonacularApp.searchRecipeCard('${id}')"
+          onclick='spoonacularApp.searchRecipeCard("${id}")'
           >Recipe</button>
         </div>
       </div>`;
@@ -273,9 +276,6 @@ const spoonacularApp = {
       }
     );
     $("#searchGroceryProductInput").val("");
-    // If async and await are removed from the code, the function will no longer wait for the response from the API before executing the next line of code. This means that data might not contain the expected result, and the console.log and spoonacularApp.showGroceryProducts statements might produce unexpected results or errors.
-
-    // Instead of using await, you would need to handle the asynchronous nature of the API call using a callback function or by using the .then() method on the returned Promise.
     spoonacularApp.showGroceryProducts(data);
   },
 
@@ -302,13 +302,16 @@ const spoonacularApp = {
       <div class="my-auto mb-0">
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="addToLocalStorage('${id}','product')"
+        onclick='addToLocalStorage("${id}","product")'
       >
         Add
       </button>
       <button
         class="bg-gray-800 text-white p-2 mt-4"
-        onclick="openModal('${title}', '${image}', '${id}')"
+        onclick="openModal('${title.replace(
+          /'/g,
+          "\\'"
+        )}', '${image}', '${id}')"
       >
         Details
       </button>
