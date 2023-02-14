@@ -14,6 +14,7 @@ function initMap() {
     zoom: 13,
   });
   infoWindow = new google.maps.InfoWindow();
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -127,6 +128,7 @@ function closeModal() {
   document.getElementById("modal").classList.remove("active");
   modal.style.display = "none";
 }
+
 const spoonacularApp = {
   //initiate app
   init: () => {
@@ -141,6 +143,7 @@ const spoonacularApp = {
   },
   apiCall: (userRequest, queries, options) => {
     const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
     return fetch(url, options)
       .then((response) => response.json())
@@ -154,11 +157,13 @@ const spoonacularApp = {
   },
   success: (data) => {
     console.log(data);
+    console.log(data);
   },
   fail: (error) => {
     console.log(error);
     console.log("you have an error");
   },
+
   validateByIngredients: () => {
     var recipeArray = $("#byIngredientsInput").val().split(",");
     var recipeString = recipeArray[0];
@@ -171,6 +176,7 @@ const spoonacularApp = {
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
       "&ingredients=" + queries,
+      "&ingredients=" + queries,
       {
         "Content-Type": "application/json",
       }
@@ -179,6 +185,7 @@ const spoonacularApp = {
     spoonacularApp.showByIngredient(data);
   },
   searchRecipeCard: async (id) => {
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;

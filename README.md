@@ -1,1 +1,3 @@
 # project1
+
+This website combines the power of two third-party-APIs which allows you to be able to seek out meal plans and ingredients for your week. Not only does this third-party-API allow the user to find the proper meal and help plan their week with what they want to eat, it guides them to the places nearby that have those items that they are searching for, either to have some ingredients or to heat up a quick meal. 

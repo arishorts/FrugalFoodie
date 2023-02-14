@@ -111,7 +111,7 @@ const spoonacularApp = {
   },
 
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/${userRequest}${queries}${apikey}`;
     return fetch(url, options)
@@ -144,7 +144,7 @@ const spoonacularApp = {
   },
 
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
