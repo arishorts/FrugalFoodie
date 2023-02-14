@@ -142,22 +142,20 @@ const spoonacularApp = {
     });
   },
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
+    const apikey = "?apiKey=c43e85f3c2a64849b63ec8539234f19c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
-    console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
         spoonacularApp.success(data);
-        return data; //why isnt this returning when i set a variable
+        return data;
       })
       .catch((error) => {
         spoonacularApp.fail(error);
       });
   },
   success: (data) => {
-    console.log(data);
-    console.log(data);
+    // console.log(data);
   },
   fail: (error) => {
     console.log(error);
@@ -184,8 +182,7 @@ const spoonacularApp = {
     spoonacularApp.showByIngredient(data);
   },
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
-    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=c43e85f3c2a64849b63ec8539234f19c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
       .then((response) => response.json())
@@ -206,8 +203,6 @@ const spoonacularApp = {
       var title = data[index].title;
       var id = data[index].id;
       anchorEl = $("<a>");
-      //anchorEl.css({ display: "block" });
-      //anchorText = anchorEl.text(data.products[index].title);
       var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
         <img
@@ -245,7 +240,7 @@ const spoonacularApp = {
   searchGroceryProduct: async (queries) => {
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" + queries, //?query=pizza
+      "&query=" + queries,
       {
         method: "GET",
         "Content-Type": "application/json",
@@ -263,8 +258,6 @@ const spoonacularApp = {
       var title = data.products[index].title;
       var id = data.products[index].id;
       anchorEl = $("<a>");
-      //anchorEl.css({ display: "block" });
-      //anchorText = anchorEl.text(data.products[index].title);
       var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
       <img
@@ -294,13 +287,7 @@ const spoonacularApp = {
       searchContainer.append(temp);
     }
   },
-  // generateIngredientsModal: (data) => {
-  //   var modalContainer = $("#modal");
-  //   modalContainer.empty();
-  //   var temp = `
-  //   `;
-  //   modalContainer.append(temp);
-  // },
+
   generateGroceryModal: (data) => {
     var modalContainer = $("#modal");
     modalContainer.empty();
