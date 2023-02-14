@@ -4,26 +4,16 @@
 //https://developers.google.com/maps/documentation/javascript/places
 //http://jsfiddle.net/2crQ7/
 //https://developers.google.com/maps/documentation/javascript
-
 var map = null;
 var currentInfoWindow = null;
-
 window.initMap = initMap;
-
 function initMap() {
   // Try HTML5 geolocation.
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 28.3772, lng: -81.563873 },
     zoom: 13,
   });
-
   infoWindow = new google.maps.InfoWindow();
-
-  // const locationButton = document.createElement("button");
-  // locationButton.textContent = "Pan to Current Location";
-  // locationButton.classList.add("custom-map-control-button");
-  // map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -46,17 +36,7 @@ function initMap() {
     // Browser doesn't support Geolocation
     handleLocationError(false, infoWindow, map.getCenter());
   }
-
-  // locationButton.addEventListener("click", () => {
-  //   // Try HTML5 geolocation.
-  //   infoWindow.setPosition(pos);
-  //   infoWindow.setContent("Location found.");
-  //   infoWindow.open(map);
-  //   map.setCenter(pos);
-  //   getRestaurants(pos);
-  // });
 }
-
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
@@ -66,7 +46,6 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   );
   infoWindow.open(map);
 }
-
 function getRestaurants(pos) {
   var myLocation = new google.maps.LatLng(pos.lat, pos.lng);
   var request = {
@@ -74,45 +53,37 @@ function getRestaurants(pos) {
     radius: 500,
     query: ["grocery store near me"],
   };
-
   var service = new google.maps.places.PlacesService(map);
   service.textSearch(request, callback);
 }
-
 function callback(results, status) {
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
       var place = results[i];
       //let price = createPrice(place.price_level);
-
       let addressComponents = place.formatted_address.split(",");
       let streetAddress = addressComponents[0];
       let cityState = addressComponents[1] + ", " + addressComponents[2];
       let lat = place.geometry.location.lat();
       let lng = place.geometry.location.lng();
       let mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
-
       let contentString = `
       <h3 class="infoWindowText"><strong>${place.name}</strong></h3>
       <h4 class="infoWindowText">${streetAddress}<br>${cityState}</h4>
       <a href="${mapUrl}" id="mapLink" class="infoWindowText" target="_blank">View on Google Maps</a>
       `;
-
       // <p>${price}<br/>;
       //Rating : ${place.rating}
       //createMarker(results[i]);
-
       var infowindow = new google.maps.InfoWindow({
         content: contentString,
       });
-
       var marker = new google.maps.Marker({
         map,
         animation: google.maps.Animation.DROP,
         position: place.geometry.location,
         title: place.name,
       });
-
       google.maps.event.addListener(
         marker,
         "click",
@@ -123,24 +94,12 @@ function callback(results, status) {
             }
             infowindow.open(map, marker);
             currentInfoWindow = infowindow;
-
-            // infowindow.setContent(contentString);
-            // infowindow.open(map, marker);
-            // if (marker.getAnimation() !== null) {
-            //   marker.setAnimation(null);
-            // } else {
-            //   marker.setAnimation(google.maps.Animation.BOUNCE);
-            //   setTimeout(() => {
-            //     marker.setAnimation(null);
-            //   }, 1000);
-            // }
           };
         })(marker, contentString, infowindow)
       );
     }
   }
 }
-
 function addToLocalStorage(card, type) {
   let currentItems = localStorage.getItem("items")
     ? JSON.parse(localStorage.getItem("items"))
@@ -149,12 +108,10 @@ function addToLocalStorage(card, type) {
   currentItems.push({ id: card, type: type });
   localStorage.setItem("items", JSON.stringify(currentItems));
 }
-
 async function openModal(header, img, id) {
   data = await spoonacularApp.apiCall(`food/products/${id}`, "", {
     "Content-Type": "application/json",
   });
-  console.log(data);
   var modalContainer = $(".list-disc");
   modalContainer.empty();
   modal.style.display = "flex";
@@ -166,22 +123,10 @@ async function openModal(header, img, id) {
     $(".list-disc").append("<li>" + item + "</li>");
   }
 }
-
 function closeModal() {
   document.getElementById("modal").classList.remove("active");
   modal.style.display = "none";
 }
-
-// ------nick add nutrients api here------
-// getNutrients: () => {
-//   data = spoonacularApp.apiCall();
-//   spoonacularApp.showNutrients(data);
-// },
-
-// showNutrients: () => {
-
-// },
-
 const spoonacularApp = {
   //initiate app
   init: () => {
@@ -194,12 +139,9 @@ const spoonacularApp = {
       spoonacularApp.validateGroceryProduct();
     });
   },
-
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
-    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
-    //console.log(url);
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
@@ -210,50 +152,25 @@ const spoonacularApp = {
         spoonacularApp.fail(error);
       });
   },
-
   success: (data) => {
-    //console.log(data);
+    console.log(data);
   },
-
   fail: (error) => {
     console.log(error);
     console.log("you have an error");
   },
-
-  checkRadioButtons: () => {
-    const intolerances = [];
-
-    if ($("#ketoCheckbox").prop("checked")) {
-      intolerances.push("keto");
-    }
-    if ($("#atkinsCheckbox").prop("checked")) {
-      intolerances.push("atkins");
-    }
-    if ($("#glutenFree").prop("checked")) {
-      intolerances.push("gluten");
-    }
-    // add more checkboxes as needed
-
-    return intolerances.join(",");
-  },
-
   validateByIngredients: () => {
     var recipeArray = $("#byIngredientsInput").val().split(",");
     var recipeString = recipeArray[0];
     for (let index = 1; index < recipeArray.length; index++) {
       recipeString = recipeString + ",+" + recipeArray[index].trim();
     }
-    //console.log(recipeString);
     spoonacularApp.searchByIngredient(recipeString);
   },
-
   searchByIngredient: async (queries) => {
-    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
-      "&ingredients=" +
-        queries +
-        (intolerances ? "&intolerances=" + intolerances : ""), //"pineapple,+flour,+sugar",
+      "&ingredients=" + queries,
       {
         "Content-Type": "application/json",
       }
@@ -261,9 +178,8 @@ const spoonacularApp = {
     $("#byIngredientsInput").val("");
     spoonacularApp.showByIngredient(data);
   },
-
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=b446d78bb57f41cebb381e5061f7ca4f";
+    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
@@ -277,7 +193,6 @@ const spoonacularApp = {
         spoonacularApp.fail(error);
       });
   },
-
   showByIngredient: (data) => {
     var searchContainer = $("#searchResults");
     searchContainer.empty();
@@ -288,8 +203,7 @@ const spoonacularApp = {
       anchorEl = $("<a>");
       //anchorEl.css({ display: "block" });
       //anchorText = anchorEl.text(data.products[index].title);
-
-      var temp = `  
+      var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
         <img
         src="${image}"
@@ -311,7 +225,6 @@ const spoonacularApp = {
       searchContainer.append(temp);
     }
   },
-
   validateGroceryProduct: () => {
     var recipeArray = $("#searchGroceryProductInput").val().split(",");
     var recipeString = recipeArray[0];
@@ -321,26 +234,18 @@ const spoonacularApp = {
     //console.log(recipeString);
     spoonacularApp.searchGroceryProduct(recipeString);
   },
-
   searchGroceryProduct: async (queries) => {
-    intolerances = spoonacularApp.checkRadioButtons();
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" +
-        queries +
-        (intolerances ? "&intolerances=" + intolerances : ""), //?query=pizza
+      "&query=" + queries, //?query=pizza
       {
         method: "GET",
         "Content-Type": "application/json",
       }
     );
     $("#searchGroceryProductInput").val("");
-    // If async and await are removed from the code, the function will no longer wait for the response from the API before executing the next line of code. This means that data might not contain the expected result, and the console.log and spoonacularApp.showGroceryProducts statements might produce unexpected results or errors.
-
-    // Instead of using await, you would need to handle the asynchronous nature of the API call using a callback function or by using the .then() method on the returned Promise.
     spoonacularApp.showGroceryProducts(data);
   },
-
   showGroceryProducts: (data) => {
     var searchContainer = $("#searchResults");
     searchContainer.empty();
@@ -352,8 +257,7 @@ const spoonacularApp = {
       anchorEl = $("<a>");
       //anchorEl.css({ display: "block" });
       //anchorText = anchorEl.text(data.products[index].title);
-
-      var temp = `  
+      var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
       <img
         src="${image}"
@@ -379,7 +283,6 @@ const spoonacularApp = {
       searchContainer.append(temp);
     }
   },
-
   // generateIngredientsModal: (data) => {
   //   var modalContainer = $("#modal");
   //   modalContainer.empty();
@@ -387,11 +290,10 @@ const spoonacularApp = {
   //   `;
   //   modalContainer.append(temp);
   // },
-
   generateGroceryModal: (data) => {
     var modalContainer = $("#modal");
     modalContainer.empty();
-    var temp = `  
+    var temp = `
     <div class="modal-overlay bg-black opacity-75"></div>
       <div class="modal-container bg-white p-4 md:w-1/2 lg:w-1/3 mx-auto">
         <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
