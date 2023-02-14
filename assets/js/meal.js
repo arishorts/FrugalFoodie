@@ -1,13 +1,15 @@
-function openModal(header, img, importantBadges) {
+async function openModal(header, img, id) {
+  data = await spoonacularApp.apiCall(`food/products/${id}`, "", {
+    "Content-Type": "application/json",
+  });
   var modalContainer = $(".list-disc");
   modalContainer.empty();
-  let importantBadgesArray = importantBadges.split(",");
   modal.style.display = "flex";
   document.getElementById("modal").classList.add("active");
   document.getElementById("modal-img").src = img;
   document.getElementById("modal-header").innerHTML = header;
-  for (let i = 0; i < importantBadgesArray.length; i++) {
-    let item = importantBadgesArray[i].replace(/_/g, " ");
+  for (let i = 0; i < data.importantBadges.length; i++) {
+    let item = data.importantBadges[i].replace(/_/g, " ");
     $(".list-disc").append("<li>" + item + "</li>");
   }
 }
