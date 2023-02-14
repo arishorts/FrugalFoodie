@@ -215,15 +215,18 @@ const spoonacularApp = {
         class="mx-auto w-auto h-auto max-h-300"
         alt="Image"
         />
-        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
+        <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title.replace(
+          /'/g,
+          "\\'"
+        )}</h4>
         <div class="my-auto mb-0">
           <button
-          class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
-          onclick="addToLocalStorage('${id}','recipe')"
+          class="bg-gray-800 text-white p-2 mt-4"
+          onclick='addToLocalStorage("${id}","recipe")'
           >Add</button>
           <button
-          class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
-          onclick="spoonacularApp.searchRecipeCard('${id}')"
+          class="bg-gray-800 text-white p-2 mt-4"
+          onclick='spoonacularApp.searchRecipeCard("${id}")'
           >Recipe</button>
         </div>
       </div>`;
@@ -272,14 +275,17 @@ const spoonacularApp = {
       <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
       <div class="my-auto mb-0">
       <button
-        class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
-        onclick="addToLocalStorage('${id}','product')"
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick='addToLocalStorage("${id}","product")'
       >
         Add
       </button>
       <button
-        class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
-        onclick="openModal('${title}', '${image}', '${id}')"
+        class="bg-gray-800 text-white p-2 mt-4"
+        onclick="openModal('${title.replace(
+          /'/g,
+          "\\'"
+        )}', '${image}', '${id}')"
       >
         Details
       </button>
