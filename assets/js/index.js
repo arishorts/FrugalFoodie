@@ -143,7 +143,6 @@ const spoonacularApp = {
   },
   apiCall: (userRequest, queries, options) => {
     const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
     return fetch(url, options)
       .then((response) => response.json())
@@ -186,7 +185,6 @@ const spoonacularApp = {
   },
   searchRecipeCard: async (id) => {
     const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
     //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
@@ -220,11 +218,11 @@ const spoonacularApp = {
         <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
         <div class="my-auto mb-0">
           <button
-          class="bg-gray-800 text-white p-2 mt-4"
+          class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
           onclick="addToLocalStorage('${id}','recipe')"
           >Add</button>
           <button
-          class="bg-gray-800 text-white p-2 mt-4"
+          class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
           onclick="spoonacularApp.searchRecipeCard('${id}')"
           >Recipe</button>
         </div>
@@ -274,13 +272,13 @@ const spoonacularApp = {
       <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
       <div class="my-auto mb-0">
       <button
-        class="bg-gray-800 text-white p-2 mt-4"
+        class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
         onclick="addToLocalStorage('${id}','product')"
       >
         Add
       </button>
       <button
-        class="bg-gray-800 text-white p-2 mt-4"
+        class="bg-gray-800 text-white p-2 mt-4 active:bg-gray-600 transition-transform duration-75"
         onclick="openModal('${title}', '${image}', '${id}')"
       >
         Details
