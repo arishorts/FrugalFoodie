@@ -77,13 +77,15 @@ img {
   margin-bottom: 10px;
 }
 
-.modal-close-button {
+/* .modal-close-button {
   border: none;
+  background-color: gray;
+  color: white;
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-}
+} */
 
 .modal {
   position: fixed;
@@ -126,7 +128,7 @@ img {
   font-size: 16px;
   margin-bottom: 10px;
 }
-.modal-close-button {
+/* .modal-close-button {
   border: none;
   background-color: white;
   color: black;
@@ -134,4 +136,4 @@ img {
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-}
+} */

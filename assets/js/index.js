@@ -4,19 +4,15 @@
 //https://developers.google.com/maps/documentation/javascript/places
 //http://jsfiddle.net/2crQ7/
 //https://developers.google.com/maps/documentation/javascript
-
 var map = null;
 var currentInfoWindow = null;
-
 window.initMap = initMap;
-
 function initMap() {
   // Try HTML5 geolocation.
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 28.3772, lng: -81.563873 },
     zoom: 13,
   });
-
   infoWindow = new google.maps.InfoWindow();
 
   if (navigator.geolocation) {
@@ -42,7 +38,6 @@ function initMap() {
     handleLocationError(false, infoWindow, map.getCenter());
   }
 }
-
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
@@ -52,7 +47,6 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   );
   infoWindow.open(map);
 }
-
 function getRestaurants(pos) {
   var myLocation = new google.maps.LatLng(pos.lat, pos.lng);
   var request = {
@@ -60,45 +54,37 @@ function getRestaurants(pos) {
     radius: 500,
     query: ["grocery store near me"],
   };
-
   var service = new google.maps.places.PlacesService(map);
   service.textSearch(request, callback);
 }
-
 function callback(results, status) {
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
       var place = results[i];
       //let price = createPrice(place.price_level);
-
       let addressComponents = place.formatted_address.split(",");
       let streetAddress = addressComponents[0];
       let cityState = addressComponents[1] + ", " + addressComponents[2];
       let lat = place.geometry.location.lat();
       let lng = place.geometry.location.lng();
       let mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
-
       let contentString = `
       <h3 class="infoWindowText"><strong>${place.name}</strong></h3>
       <h4 class="infoWindowText">${streetAddress}<br>${cityState}</h4>
       <a href="${mapUrl}" id="mapLink" class="infoWindowText" target="_blank">View on Google Maps</a>
       `;
-
       // <p>${price}<br/>;
       //Rating : ${place.rating}
       //createMarker(results[i]);
-
       var infowindow = new google.maps.InfoWindow({
         content: contentString,
       });
-
       var marker = new google.maps.Marker({
         map,
         animation: google.maps.Animation.DROP,
         position: place.geometry.location,
         title: place.name,
       });
-
       google.maps.event.addListener(
         marker,
         "click",
@@ -115,7 +101,6 @@ function callback(results, status) {
     }
   }
 }
-
 function addToLocalStorage(card, type) {
   let currentItems = localStorage.getItem("items")
     ? JSON.parse(localStorage.getItem("items"))
@@ -124,7 +109,6 @@ function addToLocalStorage(card, type) {
   currentItems.push({ id: card, type: type });
   localStorage.setItem("items", JSON.stringify(currentItems));
 }
-
 async function openModal(header, img, id) {
   data = await spoonacularApp.apiCall(`food/products/${id}`, "", {
     "Content-Type": "application/json",
@@ -140,7 +124,6 @@ async function openModal(header, img, id) {
     $(".list-disc").append("<li>" + item + "</li>");
   }
 }
-
 function closeModal() {
   document.getElementById("modal").classList.remove("active");
   modal.style.display = "none";
@@ -158,25 +141,22 @@ const spoonacularApp = {
       spoonacularApp.validateGroceryProduct();
     });
   },
-
   apiCall: (userRequest, queries, options) => {
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
+    const apikey = "?apiKey=c43e85f3c2a64849b63ec8539234f19c";
     var url = `https://api.spoonacular.com/${userRequest}${apikey}${queries}`;
     return fetch(url, options)
       .then((response) => response.json())
       .then((data) => {
         spoonacularApp.success(data);
-        return data; //why isnt this returning when i set a variable
+        return data;
       })
       .catch((error) => {
         spoonacularApp.fail(error);
       });
   },
-
   success: (data) => {
-    console.log(data);
+    // console.log(data);
   },
-
   fail: (error) => {
     console.log(error);
     console.log("you have an error");
@@ -190,7 +170,6 @@ const spoonacularApp = {
     }
     spoonacularApp.searchByIngredient(recipeString);
   },
-
   searchByIngredient: async (queries) => {
     var data = await spoonacularApp.apiCall(
       "recipes/findByIngredients",
@@ -202,10 +181,8 @@ const spoonacularApp = {
     $("#byIngredientsInput").val("");
     spoonacularApp.showByIngredient(data);
   },
-
   searchRecipeCard: async (id) => {
-    const apikey = "?apiKey=e30b6058fd0547e3a11a57312f3ec643";
-    //const apikey = "?apiKey=34d81d44cd7b469c9a2f5d3f458d078c";
+    const apikey = "?apiKey=c43e85f3c2a64849b63ec8539234f19c";
     var url = `https://api.spoonacular.com/recipes/${id}/card${apikey}`;
     return fetch(url, { "Content-Type": "application/json" })
       .then((response) => response.json())
@@ -218,7 +195,6 @@ const spoonacularApp = {
         spoonacularApp.fail(error);
       });
   },
-
   showByIngredient: (data) => {
     var searchContainer = $("#searchResults");
     searchContainer.empty();
@@ -227,10 +203,7 @@ const spoonacularApp = {
       var title = data[index].title;
       var id = data[index].id;
       anchorEl = $("<a>");
-      //anchorEl.css({ display: "block" });
-      //anchorText = anchorEl.text(data.products[index].title);
-
-      var temp = `  
+      var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
         <img
         src="${image}"
@@ -243,11 +216,11 @@ const spoonacularApp = {
         )}</h4>
         <div class="my-auto mb-0">
           <button
-          class="bg-gray-800 text-white p-2 mt-4"
+          class="bg-gray-800 text-white p-2 mt-4 rounded-lg active:scale-95 active:bg-gray-600 transition-transform duration-90"
           onclick='addToLocalStorage("${id}","recipe")'
           >Add</button>
           <button
-          class="bg-gray-800 text-white p-2 mt-4"
+          class="bg-gray-800 text-white p-2 mt-4 rounded-lg active:scale-95 active:bg-gray-600 transition-transform duration-90"
           onclick='spoonacularApp.searchRecipeCard("${id}")'
           >Recipe</button>
         </div>
@@ -255,7 +228,6 @@ const spoonacularApp = {
       searchContainer.append(temp);
     }
   },
-
   validateGroceryProduct: () => {
     var recipeArray = $("#searchGroceryProductInput").val().split(",");
     var recipeString = recipeArray[0];
@@ -265,11 +237,10 @@ const spoonacularApp = {
     //console.log(recipeString);
     spoonacularApp.searchGroceryProduct(recipeString);
   },
-
   searchGroceryProduct: async (queries) => {
     var data = await spoonacularApp.apiCall(
       "food/products/search",
-      "&query=" + queries, //?query=pizza
+      "&query=" + queries,
       {
         method: "GET",
         "Content-Type": "application/json",
@@ -278,7 +249,6 @@ const spoonacularApp = {
     $("#searchGroceryProductInput").val("");
     spoonacularApp.showGroceryProducts(data);
   },
-
   showGroceryProducts: (data) => {
     var searchContainer = $("#searchResults");
     searchContainer.empty();
@@ -288,10 +258,7 @@ const spoonacularApp = {
       var title = data.products[index].title;
       var id = data.products[index].id;
       anchorEl = $("<a>");
-      //anchorEl.css({ display: "block" });
-      //anchorText = anchorEl.text(data.products[index].title);
-
-      var temp = `  
+      var temp = `
       <div class="flex flex-col bg-gradient-to-r from-white to-gray-500 border border-black p-4 mx-6 md:mx-auto">
       <img
         src="${image}"
@@ -301,13 +268,13 @@ const spoonacularApp = {
       <h4 class="text-xl lg:text-xl md:text-md sm:text-md font-bold mt-4">${title}</h4>
       <div class="my-auto mb-0">
       <button
-        class="bg-gray-800 text-white p-2 mt-4"
+        class="bg-gray-800 text-white p-2 mt-4 rounded-lg active:scale-95 active:bg-gray-600 transition-transform duration-90"
         onclick='addToLocalStorage("${id}","product")'
       >
         Add
       </button>
       <button
-        class="bg-gray-800 text-white p-2 mt-4"
+        class="bg-gray-800 text-white p-2 mt-4 rounded-lg active:scale-95 active:bg-gray-600 transition-transform duration-90"
         onclick="openModal('${title.replace(
           /'/g,
           "\\'"
@@ -321,26 +288,18 @@ const spoonacularApp = {
     }
   },
 
-  // generateIngredientsModal: (data) => {
-  //   var modalContainer = $("#modal");
-  //   modalContainer.empty();
-  //   var temp = `
-  //   `;
-  //   modalContainer.append(temp);
-  // },
-
   generateGroceryModal: (data) => {
     var modalContainer = $("#modal");
     modalContainer.empty();
-    var temp = `  
+    var temp = `
     <div class="modal-overlay bg-black opacity-75"></div>
-      <div class="modal-container bg-white p-4 md:w-1/2 lg:w-1/3 mx-auto">
+      <div class="modal-container bg-gradient-to-r from-white to-gray-400 p-4 md:w-1/2 lg:w-1/3 mx-auto">
         <img id="modal-img" src="" class="h-64 mx-auto" alt="Image" />
         <h4 id="modal-header" class="text-xl font-bold mt-4"></h4>
         <ul class="list-disc pl-5 mt-4">
         </ul>
         <button
-          class="modal-close-button bg-gray-800 text-white p-2 mt-4"
+          class="modal-close-button bg-gray-800 text-white p-2 mt-4 rounded-lg"
           onclick="closeModal()"
         >
           Close
